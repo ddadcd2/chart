@@ -136,7 +136,7 @@ def confirmed():
     # 차트
     chart = {
         'chart': {'type': 'spline'},
-        'title': {'text': 'COVID-19 확진자 발생율'},
+        'title': {'text': 'COVID-19 확진자 발생률'},
         'subtitle': {'text': 'Source: Johns Hopkins University Center for Systems Science and Engineering'},
         'xAxis': {'type': 'datetime'},
         'yAxis': [{
@@ -209,7 +209,7 @@ def recovered():
     # 차트
     chart = {
         'chart': {'type': 'spline'},
-        'title': {'text': 'COVID-19 회복자 발생율'},
+        'title': {'text': 'COVID-19 회복자 발생률'},
         'subtitle': {'text': 'Source: Johns Hopkins University Center for Systems Science and Engineering'},
         'xAxis': {'type': 'datetime'},
         'yAxis': [{
@@ -283,7 +283,7 @@ def deaths():
     # 차트
     chart = {
         'chart': {'type': 'spline'},
-        'title': {'text': 'COVID-19 사망자 발생율'},
+        'title': {'text': 'COVID-19 사망자 발생률'},
         'subtitle': {'text': 'Source: Johns Hopkins University Center for Systems Science and Engineering'},
         'xAxis': {'type': 'datetime'},
         'yAxis': [{
