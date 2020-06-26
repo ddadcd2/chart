@@ -70,14 +70,7 @@ def dual_axes():
              'title':
                  {'text': '인원', 'style': {'color': 'black'}},
              'opposite': 'true'
-             }, ],
-        'legend': {'layout': 'vertical',
-                   'align': 'left',
-                   'x': 100,
-                   'verticalAlign': 'top',
-                   'y': 100,
-                   'floating': 'true',
-                   },
+             }],
         'series': [survived_series, not_survived_series, survived_rate],
         'tooltip': {"shared": "true"}
     }
