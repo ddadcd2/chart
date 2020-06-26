@@ -93,96 +93,224 @@ def ticket_class_view_3(request):  # 방법 3
 
 import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.dates import DateFormatter  #? 데이터 포맷 시키는 모듈이 필요한 것 같다.
-import matplotlib.ticker as ticker
 import arrow
 
 
-def covid_df():
-    pass
-    # # 데이터 선별 및 로딩
-    # df = pd.read_csv('https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv',parse_dates=['Date'])
-    # countries = ['Korea, South', 'Brazil', 'Italy', 'US', 'Canada']
-    # df = df[df['Country'].isin(countries)]
-    #
-    # # 확진자 컬럼 만들기
-    # df['Cases'] = df[['Confirmed']].sum(axis=1)
-    #
-    # # 데이터 구축하기
-    # df = df.pivot(index='Date', columns='Country', values='Cases')
-    #
-    # # countries 리스트 생성
-    # countries = list(df.columns)
-    #
-    # # df.reset_index()를 통하여 기존 인덱스 열을 데이터 열로 변경
-    # covid = df.reset_index('Date')
-    #
-    # # covid 인덱스와 columns를 새로 지정
-    # covid.set_index(['Date'], inplace=True)
-    # covid.columns = countries
-    #
-    # # 인구 대비 건수 계산 (건/백만명)
-    # populations = {'Korea, South':51269185, 'Brazil': 212559417 , 'Italy': 60461826 , 'US': 331002651, 'Canada': 37742154}
-    # percapita = covid.copy()
-    # for country in list(percapita.columns):
-    #     percapita[country] = percapita[country] / populations[country] * 1000000
-    #
-    # # Section 6 - Generating Colours and Style
-    # colors = {'Korea, South': '#FFCD12', 'Brazil': '#5CD1E5', 'Italy': '#ABF200', 'US': '#6B66FF', 'Canada': '#000000'}
-    # plt.style.use('fivethirtyeight')
-    #
-    # # arrow.get(d.year, d.month, d.day).timestamp * 1000 ??? 국가별로 뽑아서 리스트
-    # country_list = list()   # 국가별 리스트
-    # for country in list(percapita.columns):
-    #     country_series = list()
-    #     for i in percapita.index():
-    #         country_series.append(arrow.get(i.year, i.month, i.day).timestamp*1000)
-    #
-    #
-    # # 차트 속성
-    # chart = {
-    #     'chart': {'type': 'spline'},
-    #     'title': {'text': 'COVID-19 확진자 발생율'},
-    #     'subtitle': {'text': 'Source: Johns Hopkins University Center for Systems Science and Engineering'},
-    #     'xAxis': {
-    #         'type': 'datetime',
-    #         'labels': {
-    #             'format': '{value: %y-%m}'
-    #         }
-    #     },
-    #     'yAxis': [{
-    #         'title': {'text': '합계 건수'},
-    #         'labels': {'format': '{value}건/백만 명'},
-    #         'style': {'color': 'blue'}
-    #     }]}
-    #
-    # dump = json.dumps(chart)
-    # return dump
+def confirmed():
+    # 데이터 선별 및 로딩
+    df = pd.read_csv('https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv',parse_dates=['Date'])
+    countries = ['Korea, South', 'Brazil', 'Italy', 'US', 'Canada']
+    df = df[df['Country'].isin(countries)]
+
+    # 데이터 구축하기
+    df = df.pivot(index='Date', columns='Country', values='Confirmed')
+
+    # countries 리스트 생성
+    countries = list(df.columns)
+
+    # df.reset_index()를 통하여 기존 인덱스 열을 데이터 열로 변경
+    covid = df.reset_index('Date')
+
+    # covid 인덱스와 columns를 새로 지정
+    covid.set_index(['Date'], inplace=True)
+    covid.columns = countries
+
+    # 인구 대비 건수 계산 (건/백만 명)
+    populations = {'Korea, South':51269185, 'Brazil': 212559417 , 'Italy': 60461826 , 'US': 331002651, 'Canada': 37742154}
+    percapita = covid.copy()
+    for country in list(percapita.columns):
+        percapita[country] = percapita[country] / populations[country] * 1000000
+
+    # Section 6 - Generating Colours and Style
+    colors = {'Korea, South': '#FFCD12', 'Brazil': '#5CD1E5', 'Italy': '#ABF200', 'US': '#6B66FF', 'Canada': '#000000'}
+    plt.style.use('fivethirtyeight')
+
+    # 타임스탬프 구하기
+    date = covid.index
+    arrow_date = list()
+
+    for i in date:
+        arrow_date.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
+                           round(percapita.loc[i][country])])   # 반올림 처리
+
+    # 사전 생성하여 리스트에 삽입하기
+    country_list = list()
+    country_dict = dict()
+    country_dict['country'] = country
+    country_dict['date'] = arrow_date
+    country_list.append(country_dict)
+
+    # 차트
+    chart = {
+        'chart': {'type': 'spline'},
+        'title': {'text': 'COVID-19 확진자 발생율'},
+        'subtitle': {'text': 'Source: Johns Hopkins University Center for Systems Science and Engineering'},
+        'xAxis': {'type': 'datetime'},
+        'yAxis': [{
+            'labels': {
+                'format': '{value} 건/백만 명'
+            }, 'title': {
+                'text': '합계 건수'
+                },
+            }],
+        'series': list(map(
+                    lambda row: {'name': row['country'], 'data': row['date']}, country_list)
+        ),
+    }
+
+    dump = json.dumps(chart)
+    return dump
 
 
 def covid_confirmed(request):
-    return render(request, 'chart/covid_confirmed.html', {'chart': covid_df()})
+    return render(request, 'chart/covid_confirmed.html', {'chart': confirmed()})
 
 
 
 # COVID19 - recovered
-def covid_rf():
+def recovered():
     pass
+    # 데이터 선별 및 로딩
+    df = pd.read_csv('https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv',parse_dates=['Date'])
+    countries = ['Korea, South', 'Brazil', 'Italy', 'US', 'Canada']
+    df = df[df['Country'].isin(countries)]
+
+    # 데이터 구축하기
+    df = df.pivot(index='Date', columns='Country', values='Recovered')
+
+    # countries 리스트 생성
+    countries = list(df.columns)
+
+    # df.reset_index()를 통하여 기존 인덱스 열을 데이터 열로 변경
+    covid = df.reset_index('Date')
+
+    # covid 인덱스와 columns를 새로 지정
+    covid.set_index(['Date'], inplace=True)
+    covid.columns = countries
+
+    # 인구 대비 건수 계산 (건/백만명)
+    populations = {'Korea, South':51269185, 'Brazil': 212559417 , 'Italy': 60461826 , 'US': 331002651, 'Canada': 37742154}
+    percapita = covid.copy()
+    for country in list(percapita.columns):
+        percapita[country] = percapita[country] / populations[country] * 1000000
+
+    # Section 6 - Generating Colours and Style
+    colors = {'Korea, South': '#FFCD12', 'Brazil': '#5CD1E5', 'Italy': '#ABF200', 'US': '#6B66FF', 'Canada': '#000000'}
+    plt.style.use('fivethirtyeight')
+
+    # 타임스탬프 구하기
+    date = covid.index
+    arrow_date = list()
+
+    for i in date:
+        arrow_date.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
+                           round(percapita.loc[i][country])])   # 반올림 처리
+
+    # 사전 생성하여 리스트에 삽입하기
+    country_list = list()
+    country_dict = dict()
+    country_dict['country'] = country
+    country_dict['date'] = arrow_date
+    country_list.append(country_dict)
+
+    # 차트
+    chart = {
+        'chart': {'type': 'spline'},
+        'title': {'text': 'COVID-19 확진자 발생율'},
+        'subtitle': {'text': 'Source: Johns Hopkins University Center for Systems Science and Engineering'},
+        'xAxis': {'type': 'datetime'},
+        'yAxis': [{
+            'labels': {
+                'format': '{value} 건/백만 명'
+            }, 'title': {
+                'text': '합계 건수'
+                },
+            }],
+        'series': list(map(
+                    lambda row: {'name': row['country'], 'data': row['date']}, country_list)
+        ),
+    }
+
+    dump = json.dumps(chart)
+    return dump
 
 
 def covid_recovered(request):
-    return render(request, 'chart/covid_recovered.html', {'chart': covid_rf()})
+    return render(request, 'chart/covid_recovered.html', {'chart': recovered()})
 
 
 
 
 # COVID19 - deaths
-def covid_tf():
+def deaths():
     pass
+    # 데이터 선별 및 로딩
+    df = pd.read_csv('https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv',parse_dates=['Date'])
+    countries = ['Korea, South', 'Brazil', 'Italy', 'US', 'Canada']
+    df = df[df['Country'].isin(countries)]
+
+    # 데이터 구축하기
+    df = df.pivot(index='Date', columns='Country', values='Deaths')
+
+    # countries 리스트 생성
+    countries = list(df.columns)
+
+    # df.reset_index()를 통하여 기존 인덱스 열을 데이터 열로 변경
+    covid = df.reset_index('Date')
+
+    # covid 인덱스와 columns를 새로 지정
+    covid.set_index(['Date'], inplace=True)
+    covid.columns = countries
+
+    # 인구 대비 건수 계산 (건/백만명)
+    populations = {'Korea, South':51269185, 'Brazil': 212559417 , 'Italy': 60461826 , 'US': 331002651, 'Canada': 37742154}
+    percapita = covid.copy()
+    for country in list(percapita.columns):
+        percapita[country] = percapita[country] / populations[country] * 1000000
+
+    # Section 6 - Generating Colours and Style
+    colors = {'Korea, South': '#FFCD12', 'Brazil': '#5CD1E5', 'Italy': '#ABF200', 'US': '#6B66FF', 'Canada': '#000000'}
+    plt.style.use('fivethirtyeight')
+
+    # 타임스탬프 구하기
+    date = covid.index
+    arrow_date = list()
+
+    for i in date:
+        arrow_date.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
+                           round(percapita.loc[i][country])])   # 반올림 처리
+
+    # 사전 생성하여 리스트에 삽입하기
+    country_list = list()
+    country_dict = dict()
+    country_dict['country'] = country
+    country_dict['date'] = arrow_date
+    country_list.append(country_dict)
+
+    # 차트
+    chart = {
+        'chart': {'type': 'spline'},
+        'title': {'text': 'COVID-19 확진자 발생율'},
+        'subtitle': {'text': 'Source: Johns Hopkins University Center for Systems Science and Engineering'},
+        'xAxis': {'type': 'datetime'},
+        'yAxis': [{
+            'labels': {
+                'format': '{value} 건/백만 명'
+            }, 'title': {
+                'text': '합계 건수'
+                },
+            }],
+        'series': list(map(
+                    lambda row: {'name': row['country'], 'data': row['date']}, country_list)
+        ),
+    }
+
+    dump = json.dumps(chart)
+    return dump
 
 
 def covid_deaths(request):  # 방법 3
-    return render(request, 'chart/covid_deaths.html', {'chart': covid_tf()})
+    return render(request, 'chart/covid_deaths.html', {'chart': deaths()})
 
 
 
