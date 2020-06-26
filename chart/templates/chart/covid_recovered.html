@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div id="container">
+        <script src="https://code.highcharts.com/highcharts.src.js"></script>
+        <script src="https://code.highcharts.com/modules/series-label.js"></script>
+        <script>
+            Highcharts.chart('container', {{ chart|safe }});
+        </script>
+            <div class="content" style="text-align: center; margin-top: 30px;">
+            <p>
+                쥬피터 랩에서 작성한 COVID-19 회복자 현황 차트 이미지
+            </p>
+            {% load static %}
+            <img src="{% static 'chart/images/recovered.PNG' %}">
+        </div>
+    </div>
+<br/>
+{% endblock %}
