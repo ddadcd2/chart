@@ -124,7 +124,7 @@ def confirmed():
 
     for i in date:
         my_arrow.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
-                           round(percapita.loc[i][country])])   # 반올림 처리
+                           round(percapita.loc[i][country], 1)])   # 소수점 처리
 
     # 사전 생성하여 리스트에 삽입하기
     country_list = list()
@@ -197,7 +197,7 @@ def recovered():
 
     for i in date:
         my_arrow.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
-                           round(percapita.loc[i][country])])   # 반올림 처리
+                           round(percapita.loc[i][country], 1)])   # 소수점 처리
 
     # 사전 생성하여 리스트에 삽입하기
     country_list = list()
@@ -271,7 +271,7 @@ def deaths():
 
     for i in date:
         my_arrow.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
-                           round(percapita.loc[i][country])])   # 반올림 처리
+                           round(percapita.loc[i][country], 1)])   # 소수점 처리
 
     # 사전 생성하여 리스트에 삽입하기
     country_list = list()
