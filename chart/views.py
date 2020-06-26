@@ -120,17 +120,17 @@ def confirmed():
 
     # 타임스탬프 구하기
     date = covid.index
-    arrow_date = list()
+    my_arrow = list()
 
     for i in date:
-        arrow_date.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
+        my_arrow.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
                            round(percapita.loc[i][country])])   # 반올림 처리
 
     # 사전 생성하여 리스트에 삽입하기
     country_list = list()
     country_dict = dict()
     country_dict['country'] = country
-    country_dict['date'] = arrow_date
+    country_dict['date'] = my_arrow
     country_list.append(country_dict)
 
     # 차트
@@ -193,17 +193,17 @@ def recovered():
 
     # 타임스탬프 구하기
     date = covid.index
-    arrow_date = list()
+    my_arrow = list()
 
     for i in date:
-        arrow_date.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
+        my_arrow.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
                            round(percapita.loc[i][country])])   # 반올림 처리
 
     # 사전 생성하여 리스트에 삽입하기
     country_list = list()
     country_dict = dict()
     country_dict['country'] = country
-    country_dict['date'] = arrow_date
+    country_dict['date'] = my_arrow
     country_list.append(country_dict)
 
     # 차트
@@ -267,17 +267,17 @@ def deaths():
 
     # 타임스탬프 구하기
     date = covid.index
-    arrow_date = list()
+    my_arrow = list()
 
     for i in date:
-        arrow_date.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
+        my_arrow.append([arrow.get(i.year, i.month, i.day).timestamp * 1000,
                            round(percapita.loc[i][country])])   # 반올림 처리
 
     # 사전 생성하여 리스트에 삽입하기
     country_list = list()
     country_dict = dict()
     country_dict['country'] = country
-    country_dict['date'] = arrow_date
+    country_dict['date'] = my_arrow
     country_list.append(country_dict)
 
     # 차트
